@@ -19,8 +19,6 @@ The project consists of several headers, testing and selected precomputation dat
 Core functions in `include/TripleSphere.h` directly compute sphere light SH coefficients on the fly, without depending on a concrete renderer.
 Incoporate these functions into a renderer (either PRT interactive or offline physically based) should be easy, since there are no external dependencies for the implementation.
 
-This code relies on templates to enable a simpler integration into other codebases. We provide examples of our wrappers in `tests/Test.hpp`. To use our code, you will have to define the following class wrappers:
-
    + `include/Serialize.h`,`include/SHUtils.h`,`include/VecType.h` provide utilities for reading/saving matrix, fundamental types, SH/ZH evaluations and helper functions for projecting BRDF to SH.
    + `include/TripleSphere.h` provides core implementation on computing light SH coefficients.
    + `tests/TestMC.cpp` tests our recurrence formulae and compares with Monte-Carlo method.
