@@ -3,6 +3,8 @@
 //#define _MATH_DEFINES_DEFINED // for M_PI
 #include <corecrt_math_defines.h>
 #include <cmath>
+#include <stdint.h>
+#include <algorithm>
 
 
 namespace ts
@@ -12,10 +14,10 @@ namespace ts
     {
         float x, y, z;
 
-        float3()
+        /*float3()
         {
             x = y = z = 0.f;
-        }
+        }*/
     };
 
     float3 make_float3(float x, float y, float z)
@@ -54,6 +56,11 @@ namespace ts
     {
         float inv = 1.0f / s;
         return a * inv;
+    }
+
+    float3 operator/(const float3& a, const float3& b)
+    {
+        return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
     }
 
     void operator/=(float3& a, const float s)
@@ -267,5 +274,32 @@ namespace ts
                 *v2 = make_float3(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
             *v3 = cross(v1, *v2);
         }
+    }
+
+    /* Sampler from PBRT-v3. */
+    constexpr float OneMinusEpsilon = 0.9999999403953552f;
+    inline float VanDerCorput(uint32_t n, uint32_t scramble) 
+    {
+        // Reverse bits of _n_
+        n = (n << 16) | (n >> 16);
+        n = ((n & 0x00ff00ff) << 8) | ((n & 0xff00ff00) >> 8);
+        n = ((n & 0x0f0f0f0f) << 4) | ((n & 0xf0f0f0f0) >> 4);
+        n = ((n & 0x33333333) << 2) | ((n & 0xcccccccc) >> 2);
+        n = ((n & 0x55555555) << 1) | ((n & 0xaaaaaaaa) >> 1);
+        n ^= scramble;
+        return std::min(((n >> 8) & 0xffffff) / float(1 << 24), OneMinusEpsilon);
+    }
+
+    inline float Sobol2(uint32_t n, uint32_t scramble) 
+    {
+        for (uint32_t v = 1 << 31; n != 0; n >>= 1, v ^= v >> 1)
+            if (n & 0x1) scramble ^= v;
+        return std::min(((scramble >> 8) & 0xffffff) / float(1 << 24), OneMinusEpsilon);
+    }
+
+    inline void Sample02(uint32_t n, const uint32_t scramble[2], float sample[2]) 
+    {
+        sample[0] = VanDerCorput(n, scramble[0]);
+        sample[1] = Sobol2(n, scramble[1]);
     }
 }
