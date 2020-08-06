@@ -7,6 +7,7 @@
 
 // Vector type and helper sampling functions
 #include <VecType.h>
+#include <SHUtils.h>
 
 /* Provide a reference implementation of 
  * 'Spherical Light Integration over Spherical Caps via Spherical Harmonics'.
