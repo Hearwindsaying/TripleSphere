@@ -7,4 +7,4 @@ set(CMAKE_BUILD_TYPE DEBUG)
 include_directories ("include")
 
 # Project TestMC: validate with Monte Carlo result
-add_executable (TestMC  tests/TestMC.cpp  include/TripleSphere.h)
+add_executable (TestMC  tests/TestMC.cpp  include/TripleSphere.h include/SHUtils.h include/VecType.h)
